@@ -1,0 +1,94 @@
+WeChat mini-program note
+	页面布局：
+		*flex
+			.thev{
+			  /* background-color:aqua; */
+			  width: 100;
+			  height:750rpx;
+			  /* display: flex; */
+			  /* flex-direction: row;（Colum）
+			  justify-content: space-around;（space-between）
+			  /* align-items: stretch; */
+
+
+			}
+			
+			
+	小程序开发框架——程序生命周期：
+		*Onlunch
+		*OnShow
+		*OnHide
+		*OnError
+		
+	小程序开发框架——页面生命周期：
+		*OnLoad
+		*OnShow
+		*OnReady
+		*OnUnload
+		
+		
+		小程序页面周期底层工作原理：
+			小程序线程：
+				appServer Thread:
+				view Thread:
+					当小程序被启动之后appServer Thread会依次调用OnLoad和onShow生命周期函数，在这两个事件中我们可以进行服务器数据请求等国祚
+					于此同时viewThread进行初始化，当初始化完成后会调用OnReady生命周期函数，并渲染页面
+					
+					
+	小程序开发框架——路由：
+		*初始化 				新页面入栈
+		*打开新页面 			新页面入栈
+		*页面重定向				当前页面出栈，新页面入栈
+		*页面返回				页面不断出栈，直到页面目标返回，新页面入栈
+		*tab切换				页面全部出栈，只留下新的tab页面
+		*重加载					页面全部出栈，只留下新的页面
+		
+		
+		
+	小程序开发框架——事件
+		*事件是视图层到逻辑层的通讯方式
+		*事件可以将用户的行为反馈到逻辑层进行处理
+		*事件可以绑定到组件上，触发事件后就会执行逻辑层中相应的处理函数
+		*事件对象可以携带额外的信息
+		
+		
+	
+	小程序开发框架——组件
+		*媒体组件
+		*地图
+		*开放能力
+		*画布
+			-view
+			-scroll-view
+			-swiper
+			-movable-view
+			-cover-view
+		*视图容器
+		*基础内容
+		*表单组件
+		*导航
+		
+
+
+
+	
+	小程序事件流==================此处没有懂
+		*事件冒泡
+		*事件捕获
+		
+		
+		
+		
+		
+	小程序模板：
+		<include src="../templates/header" />会把整个页面所有内容加载进来
+		
+		<import src="../templates/footer" />
+		<template is="helo" data="{{text:'动态文字'}}" />会加载页面内容的一部分
+		
+		
+		
+		
+	小程序事件：
+		
+		

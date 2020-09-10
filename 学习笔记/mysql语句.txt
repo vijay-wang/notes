@@ -1,0 +1,1182 @@
+﻿not in 不会自动忽略空值，in 会自动忽略空值
+获取系统当前时间：select now（）；
+查看当前字符集设置： show variables like 'character%';
+复制表A：CREATE TABLE t_b AS select * from A;
+复制表A的一部分：CTEATE TABLE t_b AS select columnname from  A;
+表的插入：mysql> insert into t_stu select * from student where ssex='男';
+创建数据库：create datebase <databasename>;
+删除数据库：drop database <databadename>;
+删除表：drop table <tabelname>   也可以是drop table if exists <tabelname> //表示，如果存在这张表就删除，如果不存在就忽略，这样不会报错（这是MySQL的特色，其他数据库不能使用）。 
+查看数据库:show databases;
+导入数据库：source 路径；
+使用数据库L:use <databasename>;
+查看表格：show tables;
+查看表格结构：desc <tablename>；
+查看整张表格：select * from <tablename>；
+退出：exit 或者quit
+查看MySQL版本号：select version();
+查看当前使用数据库：select database（）；
+在当前数据库查看其他数据库中的表单：show tables from <databasename>;
+查看表格的建表语句：show create table <tabelname>;
+查看字段：select <字段> from <tablename>;
+多字段查询，字段中间用逗号隔开
+修改显示时的字段名称，例如：select sno as 编号,sname as 姓名,sage as 年龄,ssex as 性别 from student；（as 可以省略不写）、
+条件查询：select <字段> from <tablename> where <条件>
+
+条件：select <字段> from <tablename> where sname in (‘王丽’，‘徐坤’）；(not in)
+          等于语
+          select <字段> from <tablename> where sname='王丽' or sname='徐坤'；
+          
+           select <字段> from <tablename> where sname is null;(is not null)
+
+%代表0-N个任意字符
+_下划线代表一个任意字符
+
+
+排序语句：
+	order by <字段>  默认升序排列
+	order by <字段> asc 升序排列
+	order by <字段> desc降序排列
+
+	多个字段排序：
+		order by <>desc,<>desc;当前面那个字段降序排完后，相同的就按后面那个字段排
+		select * from sc order by 3 desc;按第三个字段排
+
+
+
+单行处理函数/单行处理函数：
+	数据处理函数：
+		upper
+		lower
+			列：
+				select upper(sname)  from student;或者select upper(sname) as sname from student;
+		substr(截取字符串)
+			列：
+				selct substr(sname,1,2) from student;substr里面第一个数字开始位置，第二个数字截取字符长度；
+				select sno,sname,sage,ssex from student where substr(sname,2,1)='a';
+
+		trim
+			列：
+				select * from student where sname=trim('   WANGLI   ');（常用在表单提交时去空格）
+
+		round
+			列：
+				select round(232.343,2);表示四舍五入到小数点后两位
+				select round(232.343,-3);表示四舍五入到小数点前三位
+				不传参数默认取整
+
+		rand（）
+			列：
+				select rand();不传参数产生0-1的随机数
+				select rand()*100;产生0-100的随机数
+				select round(rand()*100,1);
+
+		ifnull
+				在数据库中如果有null参与运算，运算结果为空，为了避免这样的情况，经常用ifnull将null值转换成指定数据
+			列：
+				select ifnull(score,1) from student;如果score为空就将其转换为1；
+
+
+
+
+		MySQL中的日期问题：
+			在不同的数据库中，日期处理的原理是不同的。在MySQL中的默认日期格式为‘%y-%m-%d'
+			在MySQL中的日期数据类型为date 
+
+			select sname,sage from student where sage='1980-01-23';
+			+-------+---------------------+
+			| sname | sage                  |
+			+-------+---------------------+
+			| 张三  | 1980-01-23 00:00:00 |
+			+-------+---------------------+
+
+			上面之所以能查询出结果，是因为age='1980-01-23' 正好与默认日期格式相同，系统做了
+			数据类型的转换。
+
+			select sname,sage from student where sage=str_to_date('01-23-1980','%m-%d-%Y');
+			+-------+---------------------+
+			| sname | sage                |
+			+-------+---------------------+
+			| 张三  | 1980-01-23 00:00:00 |
+			+-------+---------------------+
+			函数str_to_date('01-23-1980','%m-%d-%Y');把字符串转换成日期数据
+			第一个参数为数据，第二个参数为字符串的日期I格式
+
+
+			另外还有一个日期处理函数date_to_format()  将日期格式的数据转换成其他类型的数据
+
+			mysql> select sname,date_format(sage,'%m-%d-%Y') as sage from student;
+			+-------+------------+
+			| sname | sage       |
+			+-------+------------+
+			| 张三  | 01-23-1980 |
+			| 李四  | 12-12-1982 |
+			| 张飒  | 09-09-1981 |
+			| 莉莉  | 03-23-1983 |
+			| 王弼  | 06-21-1982 |
+			| 王丽  | 10-10-1984 |
+			| 刘香  | 12-22-1980 |
+			+-------+------------+
+
+			mysql> select sname,date_format(sage,'%m月%d日%Y年') as sage from student;
+			+-------+----------------+
+			| sname | sage           |
+			+-------+----------------+
+			| 张三  | 01月23日1980年 |
+			| 李四  | 12月12日1982年 |
+			| 张飒  | 09月09日1981年 |
+			| 莉莉  | 03月23日1983年 |
+			| 王弼  | 06月21日1982年 |
+			| 王丽  | 10月10日1984年 |
+			| 刘香  | 12月22日1980年 |
+			+-------+----------------+
+
+
+多行处理函数/分组函数/聚合函数：（多行处理函数自动忽略空值，分组函数不能直接使用在where子句中，也就是分组函数不能出现在where关键字后面）
+	sum:求这个字段的总和
+		列：
+			mysql> select sum(score) from sc;
+			+------------+
+			| sum(score) |
+			+------------+
+			|       2155 |
+			+------------+
+	avg：求整个字段的平均值
+		列：
+			mysql> select avg(score) from sc;
+			+------------+
+			| avg(score) |
+			+------------+
+			|    74.3103 |
+			+------------+
+	max：求整个字段的最大值
+		列：
+			mysql> select max(score) from sc;
+			+------------+
+			| max(score) |
+			+------------+
+			|         99 |
+			+------------+
+	min:求整个字段的最小值
+		列：
+			mysql> select min(score) from sc;
+			+------------+
+			| min(score) |
+			+------------+
+			|         36 |
+			+------------+
+	count:求整个字段有多少条数据
+		列：
+			1、mysql> select count(score) from sc;
+				+--------------+
+				| count(score) |
+				+--------------+
+				|           29 |
+				+--------------+
+			2、mysql> select count(*) from sc where score >90;（所有满足条件的数据的总和，只对count函数有用
+				+----------+
+				| count(*) |
+				+----------+
+				|        5 |
+				+----------+
+			
+			所有的上面分组函数都可以在后面加上条件，列如：
+				mysql> select count(score) from sc where score>90;
+				+--------------+
+				| count(score) |
+				+--------------+
+				|            5 |
+				+--------------+
+				
+	distinct：将查询结果中重复的结果去掉
+		列：
+			select distinct score from sc;(可以有多个字段，这时就去除多个字段都重复的数据，必须出现在字段的最前方）
+			
+			
+			
+分组查询：
+	group by:
+		列：
+			mysql> select cno,max(score) from sc group by cno;（求出每一门课程中的最高分）
+			+-----+------------+
+			| cno | max(score) |
+			+-----+------------+
+			|   1 |         90 |
+			|   2 |         96 |
+			|   3 |         98 |
+			|   4 |         99 |
+			|   5 |         89 |
+			+-----+------------+
+			注意：where关键字后面不能不能出现分组函数，group by 只能在where后面，不能再where前面
+			
+	having：
+		列：
+			mysql> select cno,max(score) from sc group by cno having max(score)>90;（先找出每一科的最高分，再把这些最高分中大于90的筛选出来）
+			+-----+------------+
+			| cno | max(score) |
+			+-----+------------+
+			|   2 |         96 |
+			|   3 |         98 |
+			|   4 |         99 |
+			+-----+------------+
+			
+			
+	where和having后面都是添加条件
+	where在group by之前完成过滤
+	having在group by 之后完成过滤
+	/////////////尽量在where的时候过滤，这样效率更高，否则有很多没有用的数据参与分组会降低效率
+	
+	执行顺序
+	1、from				从某张表中检索数据
+	2、where			过滤不需要的数据
+	3、group by			进行分组
+	4、having			如果不满意再进行过滤
+	5、select			查询出结果
+	6、sort				进行排序
+	
+	
+	
+	
+	
+连接查询：
+	连接查询根据连接方式可分为：
+		1、内链接（a表和b表能够完全匹配的结果查询出来，成为内连接）
+			-等值连接
+			-非等值连接
+			-自连接
+		2、外连接（除a表和b表能够完全匹配的结果查询出来外，还要将其中一张表的结果完全无条件的查询出来，对方没有完全匹配的记录，会自动模拟出null与之匹配，这种查询称为外连接）
+			-左外连接【左连接】
+			-右外连接【右连接】
+		3、全连接（使用很少）
+		
+		若两张表连接查询时没有任何条件限制，插叙结果数量会是两张表的数据数量的乘积，这种现象称为笛卡尔积现象
+		
+		
+		内连接：
+			等值连接：
+				【92】
+					mysql> select stu.sname,sco.score from student stu,sc sco where stu.sno=sco.sno;
+					+-------+-------+
+					| sname | score |
+					+-------+-------+
+					| 张三  |    80 |
+					| 张三  |    86 |
+					| 张三  |    83 |
+					| 张三  |    89 |
+					| 李四  |    50 |
+					| 李四  |    36 |
+					| 李四  |    43 |
+					| 李四  |    59 |
+					| 张飒  |    50 |
+					| 张飒  |    96 |
+					| 张飒  |    73 |
+					| 张飒  |    69 |
+					| 莉莉  |    90 |
+					| 莉莉  |    36 |
+					| 莉莉  |    88 |
+					| 莉莉  |    99 |
+					| 王弼  |    90 |
+					| 王弼  |    96 |
+					| 王弼  |    98 |
+					| 王弼  |    99 |
+					| 王丽  |    70 |
+					| 王丽  |    66 |
+					| 王丽  |    58 |
+					| 王丽  |    79 |
+					| 刘香  |    80 |
+					| 刘香  |    76 |
+					| 刘香  |    68 |
+					| 刘香  |    59 |
+					| 刘香  |    89 |
+					+-------+-------+
+					mysql> select sco.score,stu.sname,cou.cname,stu.sage,stu.ssex from student stu,sc sco,course cou where stu.sno=sco.sno and sco.cno=cou.cno;
+					+-------+-------+----------+---------------------+------+
+					| score | sname | cname    | sage                | ssex |
+					+-------+-------+----------+---------------------+------+
+					|    80 | 张三  | 企业管理 | 1980-01-23 00:00:00 | 男   |
+					|    50 | 李四  | 企业管理 | 1982-12-12 00:00:00 | 男   |
+					|    50 | 张飒  | 企业管理 | 1981-09-09 00:00:00 | 男   |
+					|    90 | 莉莉  | 企业管理 | 1983-03-23 00:00:00 | 女   |
+					|    90 | 王弼  | 企业管理 | 1982-06-21 00:00:00 | 男   |
+					|    70 | 王丽  | 企业管理 | 1984-10-10 00:00:00 | 女   |
+					|    80 | 刘香  | 企业管理 | 1980-12-22 00:00:00 | 女   |
+					|    86 | 张三  | 马克思   | 1980-01-23 00:00:00 | 男   |
+					|    36 | 李四  | 马克思   | 1982-12-12 00:00:00 | 男   |
+					|    96 | 张飒  | 马克思   | 1981-09-09 00:00:00 | 男   |
+					|    36 | 莉莉  | 马克思   | 1983-03-23 00:00:00 | 女   |
+					|    96 | 王弼  | 马克思   | 1982-06-21 00:00:00 | 男   |
+					|    66 | 王丽  | 马克思   | 1984-10-10 00:00:00 | 女   |
+					|    76 | 刘香  | 马克思   | 1980-12-22 00:00:00 | 女   |
+					|    83 | 张三  | UML      | 1980-01-23 00:00:00 | 男   |
+					|    43 | 李四  | UML      | 1982-12-12 00:00:00 | 男   |
+					|    73 | 张飒  | UML      | 1981-09-09 00:00:00 | 男   |
+					|    88 | 莉莉  | UML      | 1983-03-23 00:00:00 | 女   |
+					|    98 | 王弼  | UML      | 1982-06-21 00:00:00 | 男   |
+					|    58 | 王丽  | UML      | 1984-10-10 00:00:00 | 女   |
+					|    68 | 刘香  | UML      | 1980-12-22 00:00:00 | 女   |
+					|    89 | 张三  | 数据库   | 1980-01-23 00:00:00 | 男   |
+					|    59 | 李四  | 数据库   | 1982-12-12 00:00:00 | 男   |
+					|    69 | 张飒  | 数据库   | 1981-09-09 00:00:00 | 男   |
+					|    99 | 莉莉  | 数据库   | 1983-03-23 00:00:00 | 女   |
+					|    99 | 王弼  | 数据库   | 1982-06-21 00:00:00 | 男   |
+					|    79 | 王丽  | 数据库   | 1984-10-10 00:00:00 | 女   |
+					|    59 | 刘香  | 数据库   | 1980-12-22 00:00:00 | 女   |
+					|    89 | 刘香  | 物理     | 1980-12-22 00:00:00 | 女   |
+					+-------+-------+----------+---------------------+------+
+				【99】
+					mysql> select sco.score,stu.sname from student stu inner join sc sco on stu.sno=sco.sno;（inner可以省略）
+					+-------+-------+
+					| score | sname |
+					+-------+-------+
+					|    80 | 张三  |
+					|    86 | 张三  |
+					|    83 | 张三  |
+					|    89 | 张三  |
+					|    50 | 李四  |
+					|    36 | 李四  |
+					|    43 | 李四  |
+					|    59 | 李四  |
+					|    50 | 张飒  |
+					|    96 | 张飒  |
+					|    73 | 张飒  |
+					|    69 | 张飒  |
+					|    90 | 莉莉  |
+					|    36 | 莉莉  |
+					|    88 | 莉莉  |
+					|    99 | 莉莉  |
+					|    90 | 王弼  |
+					|    96 | 王弼  |
+					|    98 | 王弼  |
+					|    99 | 王弼  |
+					|    70 | 王丽  |
+					|    66 | 王丽  |
+					|    58 | 王丽  |
+					|    79 | 王丽  |
+					|    80 | 刘香  |
+					|    76 | 刘香  |
+					|    68 | 刘香  |
+					|    59 | 刘香  |
+					|    89 | 刘香  |
+					+-------+-------+
+			非等值连接：
+				非等值连接在on的后面可以跟不等式。在【99】标准中on后面跟了条件以后还可以where进一步进行加条件进行过滤
+			自连接：
+				自连接就是指一张表看成两张表
+				
+		外连接：
+			右外连接：（右连接）
+				mysql> select sname,score from student right outer join sc on student.sno=sc.sno;（outer关键字可以省略）
+			左外连接：（左连接）
+				语法同右外连接一样
+				
+
+多表连接语法：
+	select
+		字段中
+	from
+		a
+	join
+		b
+	on
+		条件
+	join
+		c
+	on
+		条件
+	原理:a表和b表连接完后，a表再和c表连接
+		列：
+		【99】:
+			mysql>  select 
+						cou.cname,tea.tname,stu.sname,sco.score,stu.sage,stu.ssex 
+					from 
+						course cou 
+					join 
+						teacher tea 
+					on 
+						cou.tno=tea.tno 
+					join 
+						sc sco 
+					on 
+						cou.cno=sco.cno 
+					join 
+						student stu 
+					on 
+						stu.sno=sco.sno;
+			+----------+--------+-------+-------+---------------------+------+
+			| cname    | tname  | sname | score | sage                | ssex |
+			+----------+--------+-------+-------+---------------------+------+
+			| 企业管理 | 李老师 | 张三  |    80 | 1980-01-23 00:00:00 | 男   |
+			| 企业管理 | 李老师 | 李四  |    50 | 1982-12-12 00:00:00 | 男   |
+			| 企业管理 | 李老师 | 张飒  |    50 | 1981-09-09 00:00:00 | 男   |
+			| 企业管理 | 李老师 | 莉莉  |    90 | 1983-03-23 00:00:00 | 女   |
+			| 企业管理 | 李老师 | 王弼  |    90 | 1982-06-21 00:00:00 | 男   |
+			| 企业管理 | 李老师 | 王丽  |    70 | 1984-10-10 00:00:00 | 女   |
+			| 企业管理 | 李老师 | 刘香  |    80 | 1980-12-22 00:00:00 | 女   |
+			| 马克思   | 张老师 | 张三  |    86 | 1980-01-23 00:00:00 | 男   |
+			| 马克思   | 张老师 | 李四  |    36 | 1982-12-12 00:00:00 | 男   |
+			| 马克思   | 张老师 | 张飒  |    96 | 1981-09-09 00:00:00 | 男   |
+			| 马克思   | 张老师 | 莉莉  |    36 | 1983-03-23 00:00:00 | 女   |
+			| 马克思   | 张老师 | 王弼  |    96 | 1982-06-21 00:00:00 | 男   |
+			| 马克思   | 张老师 | 王丽  |    66 | 1984-10-10 00:00:00 | 女   |
+			| 马克思   | 张老师 | 刘香  |    76 | 1980-12-22 00:00:00 | 女   |
+			| UML      | 王老师 | 张三  |    83 | 1980-01-23 00:00:00 | 男   |
+			| UML      | 王老师 | 李四  |    43 | 1982-12-12 00:00:00 | 男   |
+			| UML      | 王老师 | 张飒  |    73 | 1981-09-09 00:00:00 | 男   |
+			| UML      | 王老师 | 莉莉  |    88 | 1983-03-23 00:00:00 | 女   |
+			| UML      | 王老师 | 王弼  |    98 | 1982-06-21 00:00:00 | 男   |
+			| UML      | 王老师 | 王丽  |    58 | 1984-10-10 00:00:00 | 女   |
+			| UML      | 王老师 | 刘香  |    68 | 1980-12-22 00:00:00 | 女   |
+			| 数据库   | 刘老师 | 张三  |    89 | 1980-01-23 00:00:00 | 男   |
+			| 数据库   | 刘老师 | 李四  |    59 | 1982-12-12 00:00:00 | 男   |
+			| 数据库   | 刘老师 | 张飒  |    69 | 1981-09-09 00:00:00 | 男   |
+			| 数据库   | 刘老师 | 莉莉  |    99 | 1983-03-23 00:00:00 | 女   |
+			| 数据库   | 刘老师 | 王弼  |    99 | 1982-06-21 00:00:00 | 男   |
+			| 数据库   | 刘老师 | 王丽  |    79 | 1984-10-10 00:00:00 | 女   |
+			| 数据库   | 刘老师 | 刘香  |    59 | 1980-12-22 00:00:00 | 女   |
+			| 物理     | 叶平   | 刘香  |    89 | 1980-12-22 00:00:00 | 女   |
+			+----------+--------+-------+-------+---------------------+------+
+		【92】：
+			mysql>  select
+						cou.cname,tea.tname,stu.sname,sco.score,stu.sage,stu.ssex
+					from 
+						course cou,teacher tea,sc sco,student stu 
+					where 
+						cou.tno=tea.tno and cou.cno=sco.cno and stu.sno=sco.sno;
+			+----------+--------+-------+-------+---------------------+------+
+			| cname    | tname  | sname | score | sage                | ssex |
+			+----------+--------+-------+-------+---------------------+------+
+			| 企业管理 | 李老师 | 张三  |    80 | 1980-01-23 00:00:00 | 男   |
+			| 企业管理 | 李老师 | 李四  |    50 | 1982-12-12 00:00:00 | 男   |
+			| 企业管理 | 李老师 | 张飒  |    50 | 1981-09-09 00:00:00 | 男   |
+			| 企业管理 | 李老师 | 莉莉  |    90 | 1983-03-23 00:00:00 | 女   |
+			| 企业管理 | 李老师 | 王弼  |    90 | 1982-06-21 00:00:00 | 男   |
+			| 企业管理 | 李老师 | 王丽  |    70 | 1984-10-10 00:00:00 | 女   |
+			| 企业管理 | 李老师 | 刘香  |    80 | 1980-12-22 00:00:00 | 女   |
+			| 马克思   | 张老师 | 张三  |    86 | 1980-01-23 00:00:00 | 男   |
+			| 马克思   | 张老师 | 李四  |    36 | 1982-12-12 00:00:00 | 男   |
+			| 马克思   | 张老师 | 张飒  |    96 | 1981-09-09 00:00:00 | 男   |
+			| 马克思   | 张老师 | 莉莉  |    36 | 1983-03-23 00:00:00 | 女   |
+			| 马克思   | 张老师 | 王弼  |    96 | 1982-06-21 00:00:00 | 男   |
+			| 马克思   | 张老师 | 王丽  |    66 | 1984-10-10 00:00:00 | 女   |
+			| 马克思   | 张老师 | 刘香  |    76 | 1980-12-22 00:00:00 | 女   |
+			| UML      | 王老师 | 张三  |    83 | 1980-01-23 00:00:00 | 男   |
+			| UML      | 王老师 | 李四  |    43 | 1982-12-12 00:00:00 | 男   |
+			| UML      | 王老师 | 张飒  |    73 | 1981-09-09 00:00:00 | 男   |
+			| UML      | 王老师 | 莉莉  |    88 | 1983-03-23 00:00:00 | 女   |
+			| UML      | 王老师 | 王弼  |    98 | 1982-06-21 00:00:00 | 男   |
+			| UML      | 王老师 | 王丽  |    58 | 1984-10-10 00:00:00 | 女   |
+			| UML      | 王老师 | 刘香  |    68 | 1980-12-22 00:00:00 | 女   |
+			| 数据库   | 刘老师 | 张三  |    89 | 1980-01-23 00:00:00 | 男   |
+			| 数据库   | 刘老师 | 李四  |    59 | 1982-12-12 00:00:00 | 男   |
+			| 数据库   | 刘老师 | 张飒  |    69 | 1981-09-09 00:00:00 | 男   |
+			| 数据库   | 刘老师 | 莉莉  |    99 | 1983-03-23 00:00:00 | 女   |
+			| 数据库   | 刘老师 | 王弼  |    99 | 1982-06-21 00:00:00 | 男   |
+			| 数据库   | 刘老师 | 王丽  |    79 | 1984-10-10 00:00:00 | 女   |
+			| 数据库   | 刘老师 | 刘香  |    59 | 1980-12-22 00:00:00 | 女   |
+			| 物理     | 叶平   | 刘香  |    89 | 1980-12-22 00:00:00 | 女   |
+			+----------+--------+-------+-------+---------------------+------+
+			
+			
+			
+			
+			
+子查询；（子查询就是select嵌套select语句）
+	select嵌套语句可以出现的位置：
+		select.....select
+		from.......select
+		where......select
+		
+		列如：
+			在where后面使用子查询：
+				mysql> select sco.score,stu.sname from sc sco,student stu where sco.sno=stu.sno and score<(select avg(score) from sc);
+				+-------+-------+
+				| score | sname |
+				+-------+-------+
+				|    50 | 李四  |
+				|    36 | 李四  |
+				|    43 | 李四  |
+				|    59 | 李四  |
+				|    50 | 张飒  |
+				|    73 | 张飒  |
+				|    69 | 张飒  |
+				|    36 | 莉莉  |
+				|    70 | 王丽  |
+				|    66 | 王丽  |
+				|    58 | 王丽  |
+				|    68 | 刘香  |
+				|    59 | 刘香  |
+				+-------+-------+
+			
+			
+			在from后面使用子查询（把查询结果当作一张表，再次查询）：
+				mysql> select sname,max(score) from (select sname,score from sc,student where sc.sno=student.sno) t group by sname;
+				+-------+------------+
+				| sname | max(score) |
+				+-------+------------+
+				| 张三  |         89 |
+				| 李四  |         59 |
+				| 张飒  |         96 |
+				| 莉莉  |         99 |
+				| 王弼  |         99 |
+				| 王丽  |         79 |
+				| 刘香  |         89 |
+				+-------+------------+
+			在select后面使用子查询：
+				 select stu.sname,(select sco.score from sc sco where stu.sno=sco.sno) as sco from student stu;
+				 
+				 
+				 
+				 
+union：（使用union合并的表 字段数量必须相等  在MySQL中字段数据类型不相等也能合并，但是在Oracle中不行）
+	将查询出的两张表的结果合并：
+		大于平均分的分数：
+			mysql> select sname,score from student,sc where student.sno=sc.sno and score>(select avg(score) from sc);
+			+-------+-------+
+			| sname | score |
+			+-------+-------+
+			| 张三  |    80 |
+			| 张三  |    86 |
+			| 张三  |    83 |
+			| 张三  |    89 |
+			| 张飒  |    96 |
+			| 莉莉  |    90 |
+			| 莉莉  |    88 |
+			| 莉莉  |    99 |
+			| 王弼  |    90 |
+			| 王弼  |    96 |
+			| 王弼  |    98 |
+			| 王弼  |    99 |
+			| 王丽  |    79 |
+			| 刘香  |    80 |
+			| 刘香  |    76 |
+			| 刘香  |    89 |
+			+-------+-------+
+		小于平均分的分数：
+			mysql> select sname,score from student,sc where student.sno=sc.sno and score<(select avg(score) from sc);
+			+-------+-------+
+			| sname | score |
+			+-------+-------+
+			| 李四  |    50 |
+			| 李四  |    36 |
+			| 李四  |    43 |
+			| 李四  |    59 |
+			| 张飒  |    50 |
+			| 张飒  |    73 |
+			| 张飒  |    69 |
+			| 莉莉  |    36 |
+			| 王丽  |    70 |
+			| 王丽  |    66 |
+			| 王丽  |    58 |
+			| 刘香  |    68 |
+			| 刘香  |    59 |
+			+-------+-------+
+	合并两张表：
+		mysql> select sname,score from student,sc where student.sno=sc.sno and score>(select avg(score) from sc)
+		-> union
+		-> select sname,score from student,sc where student.sno=sc.sno and score<(select avg(score) from sc);
+		+-------+-------+
+		| sname | score |
+		+-------+-------+
+		| 张三  |    80 |
+		| 张三  |    86 |
+		| 张三  |    83 |
+		| 张三  |    89 |
+		| 张飒  |    96 |
+		| 莉莉  |    90 |
+		| 莉莉  |    88 |
+		| 莉莉  |    99 |
+		| 王弼  |    90 |
+		| 王弼  |    96 |
+		| 王弼  |    98 |
+		| 王弼  |    99 |
+		| 王丽  |    79 |
+		| 刘香  |    80 |
+		| 刘香  |    76 |
+		| 刘香  |    89 |
+		| 李四  |    50 |
+		| 李四  |    36 |
+		| 李四  |    43 |
+		| 李四  |    59 |
+		| 张飒  |    50 |
+		| 张飒  |    73 |
+		| 张飒  |    69 |
+		| 莉莉  |    36 |
+		| 王丽  |    70 |
+		| 王丽  |    66 |
+		| 王丽  |    58 |
+		| 刘香  |    68 |
+		| 刘香  |    59 |
+		+-------+-------+
+		
+		
+limit:(limit是MySQL数据库中特有的方法，应尽量避免使用）
+	limit语法：
+		limit 起始下标 截取数量
+		列：
+			mysql> select sname from student limit 1,3;
+			+-------+
+			| sname |
+			+-------+
+			| 李四  |
+			| 张飒  |
+			| 莉莉  |
+			+-------+
+			mysql> select sname from student limit 5;
+			+-------+
+			| sname |
+			+-------+
+			| 张三  |
+			| 李四  |
+			| 张飒  |
+			| 莉莉  |
+			| 王弼  |
+			+-------+
+		注：默认起始位置为0；
+	通用的分页语句：
+		select
+			字段
+		from
+			tablename
+		limit
+			(PageNo-1)*PageSize,PageSize
+			
+			
+表：
+	建表语句：
+		CREATE TABLE tablename（
+			字段名称 DATATYPE(LENGTH);
+			字段名称 DATATYPE(L
+			ENGTH);
+			字段名称 DATATYPE(LENGTH);
+			字段名称 DATATYPE(LENGTH);
+			字段名称 DATATYPE(LENGTH);
+		）；
+		DATATYPE:
+			-VARCHAR
+				*可变长度字符串
+			-CHAR
+				*定长字符串
+					-VARCHAR和CHAR都是字符串类型
+					-CHAR直接分配指定长度空间，不利于节省空间，但是运行效率更高，当需要存储类似性别这种固定长度的数据时可以用CHAR数据类型，
+					既节省空间，运行效率也高。当存入数据不足LENGTH个长度时用空格补满到LENGTH 个长度
+					-VARCHAR动态分配长度，会根据存入数据的实际长度来进行存储空间的分配，但是分配空间时要进行字符串长度的判断，因此运行效率比CHAR类型低。
+					当存入数据超过指定LENGTH长度会报错，利于节省空间。
+			-INT
+				*整型数据
+					-INT(3)最大可以存储到999
+			-BIGINT
+				*长整型
+					-long数据类型
+			-FLOAT
+				*浮点型（单精度）
+			-DOUBLE
+				*浮点型（双精度）
+					-DOUBLE(7,4)表示七位有效数字，两位小数
+			-DATE
+				*日期
+					-日期类型，在开发中为了实现通用，一般不使用DATE类型，用字符串代替
+			-BLOB
+				*Binary Large OBject(二进制大对象）
+					-一般用于存放图片，音频，视频。但是数据资源有限，一般不会把较大的此类数据存放到数据库中，通常给出链接地址。
+			-CLOB
+				*Character Large OBject（字符大对象）
+					-用于存储较大的文本，可以存储4G+的文本数据。
+			-其他
+	注意：
+		*建表时表格名最好以t_或tbl_开头，增强可读性。		
+		*VARCHAR数据类型长度最好是2的倍数，方便存储中文。
+		
+	增/删/改表结构；
+		*增加表字段
+			-mysql> alter table t_stu add phone INT(12);
+			 mysql> desc t_stu;
+			 +-------+-------------+------+-----+---------+-------+
+			 | Field | Type        | Null | Key | Default | Extra |
+			 +-------+-------------+------+-----+---------+-------+
+			 | sno   | int(11)     | NO   |     | NULL    |       |
+			 | sname | varchar(20) | NO   |     | NULL    |       |
+			 | sage  | datetime    | NO   |     | NULL    |       |
+			 | ssex  | char(2)     | NO   |     | NULL    |       |
+			 | phone | int(12)     | YES  |     | NULL    |       |
+			 +-------+-------------+------+-----+---------+-------+
+		*改表结构；
+			-mysql> alter table t_stu modify phone INT(20);
+			 mysql> desc t_stu;
+			 +-------+-------------+------+-----+---------+-------+
+			 | Field | Type        | Null | Key | Default | Extra |
+			 +-------+-------------+------+-----+---------+-------+
+			 | sno   | int(11)     | NO   |     | NULL    |       |
+			 | sname | varchar(20) | NO   |     | NULL    |       |
+			 | sage  | datetime    | NO   |     | NULL    |       |
+			 | ssex  | char(2)     | NO   |     | NULL    |       |
+			 | phone | int(20)     | YES  |     | NULL    |       |
+			 +-------+-------------+------+-----+---------+-------+
+		*删表结构：
+			-mysql> alter table t_stu drop phone;
+			 mysql> select * from t_stu;
+			 +-----+-------+---------------------+------+
+			 | sno | sname | sage                | ssex |
+		  	 +-----+-------+---------------------+------+
+			 |   1 | 张三  | 1980-01-23 00:00:00 | 男   |
+		 	 |   2 | 李四  | 1982-12-12 00:00:00 | 男   |
+			 |   3 | 张飒  | 1981-09-09 00:00:00 | 男   |
+			 |   4 | 莉莉  | 1983-03-23 00:00:00 | 女   |
+			 |   5 | 王弼  | 1982-06-21 00:00:00 | 男   |
+			 |   6 | 王丽  | 1984-10-10 00:00:00 | 女   |
+			 |   7 | 刘香  | 1980-12-22 00:00:00 | 女   |
+			 |   1 | 张三  | 1980-01-23 00:00:00 | 男   |
+			 |   2 | 李四  | 1982-12-12 00:00:00 | 男   |
+			 |   3 | 张飒  | 1981-09-09 00:00:00 | 男   |
+			 |   5 | 王弼  | 1982-06-21 00:00:00 | 男   |
+			 +-----+-------+---------------------+------+
+		
+DML语句（insert，update，delete）	
+	insert：
+		列；
+			INSERT INTO t_student(name,schno,gender,birth,email) VALUES('WANGWENJIE',1,'M','1992-01-02','WANGWENJIE@QQ.mail');
+			+------------+-------+--------+------------+--------------------+
+			| name       | schno | gender | birth      | email              |
+			+------------+-------+--------+------------+--------------------+
+			| WANGWENJIE |     1 | M      | 1992-01-02 | WANGWENJIE@QQ.mail |
+			+------------+-------+--------+------------+--------------------+
+			
+			INSERT INTO t_student(name,email) VALUES('WANGWENJIE','WANGWENJIE@QQ.mail');
+			+------------+-------+--------+------------+--------------------+
+			| name       | schno | gender | birth      | email              |
+			+------------+-------+--------+------------+--------------------+
+		 	| WANGWENJIE |     1 | M      | 1992-01-02 | WANGWENJIE@QQ.mail |
+			| WANGWENJIE |  NULL | NULL   | NULL       | WANGWENJIE@QQ.mail |
+			+------------+-------+--------+------------+--------------------+
+			
+		注意：
+			*如果INSERT INTO t_student() VALUES('WANGWENJIE',1,'M','1992-01-02','WANGWENJIE@QQ.mail');
+			 中的字段不填，就默认是每个字段都右内容。那么在后面VALUES中必须把每个字段的内容都写上，否则会报错。
+			 建议不要省略字段，省略字段会导致程序不健壮，后期添加或修改字段时会导致程序出错。
+			
+			*如果使用ISERT语句插入的内容中含有中文的时候，会添加数据失败，因为DOS窗口默认时gbk的编码方式，而
+			MySQL数据库的默认编码方式为utf-8，dos窗口不能读取utf-8格式的中文字符。
+			这时有几种方法可以解决：
+				-mysql> set character_set_resulte='utf8';（只对当此登陆有效，当退出数据库的登陆时，又会失效）
+				-修改dos窗口的默认编码格式为utf8
+				-使用sql font 工具添加数据
+				
+		在表中插入当前时间：
+			CREATE TABLE t_student_2(
+					name VARCHAR(12),
+					entryTime date,
+					no INT(3)
+			);
+			INSERT INTO t_student_2（name,entryTime,no) VALUES('WANGWENJIE',now(),1);
+				
+如果想大量执行sql语句，可以将这些sql语句写入sql脚本中，用source执行
+
+		插入表的一部分：（前提是插入的字段要相等） 
+			mysql> insert into t_stu select * from student where ssex='男';
+
+
+	UPDATE语句：
+		语法：
+			-UPDATE tabelname SET columnname=.....,columnname=.....，columnname=..... where。。。。；
+		注意：使用UPDATE语句一定要加上限制条件，否则全部数据都会被更新；
+		列如：
+			mysql> SELECT * FROM t_stu;
+			+------+------+-------+
+			| no   | name | email |
+			+------+------+-------+
+			|    1 | NULL | NULL  |
+			|    2 | NULL | NULL  |
+			+------+------+-------+
+			mysql> update t_stu set name='wangwenjie',email='wangwenjie@163.com' where no=1;
+			mysql> select * from t_stu;
+			+------+------------+--------------------+
+			| no   | name       | email              |
+			+------+------------+--------------------+
+			|    1 | wangwenjie | wangwenjie@163.com |
+			|    2 | NULL       | NULL               |
+			+------+------------+--------------------+
+			
+	
+	DELETE 语句：
+		语法：
+			-DELETE from  tablename where .....;
+		注意：如果不添加条件限制，会将整张表的数据删完；
+		列如：
+			mysql> select * from t_stu;
+			+------+------------+-------------+
+			| no   | name       | email       |
+			+------+------------+-------------+
+			|    1 | yhh        | 3456@qq.com |
+			|    2 | wangwenjie | 3435@qq.com |
+			|    3 | NULL       | NULL        |
+			+------+------------+-------------+
+			mysql> DELETE FROM t_stu where email like '34%';
+			mysql> select * from t_stu;
+			+------+------+-------+
+			| no   | name | email |
+			+------+------+-------+
+			|    3 | NULL | NULL  |
+			+------+------+-------+
+			
+			
+			
+			
+约束：
+	约束包括的种类：
+		-非空约束			not null
+		-唯一性约束			unique
+		-主键约束			primary key
+		-外约束				foreign key
+		-检查约束			mysql不支持，Oracle支持
+	列如：
+		*非空约束 语法：
+			CREATE TABLE t_student(
+					no INT(3),
+					name VARCHAR(12) not null,
+					email VARCHAR(32)
+			);
+			mysql> desc t_student;
+			+-------+-------------+------+-----+---------+-------+
+			| Field | Type        | Null | Key | Default | Extra |
+			+-------+-------------+------+-----+---------+-------+
+			| no    | int(3)      | YES  |     | NULL    |       |
+			| name  | varchar(12) | NO   |     | NULL    |       |
+			| email | varchar(32) | YES  |     | NULL    |       |
+			+-------+-------------+------+-----+---------+-------+
+			注意：当insert数据时，如果name字段没有给定值，就会插入失败。
+		*唯一性约束 语法：
+			CREATE TABLE t_student(
+					no INT(3),
+					name VARCHAR(12) not null,
+					email VARCHAR(32) unique
+			);
+			mysql> insert into(no,name,email) values(1,'wangwenjie','wangwenjie@qq.com');
+			mysql> insert into t_student(no,name,email) values(2,'yhh','wangwenjie@qq.com');
+			ERROR 1062 (23000): Duplicate entry 'wangwenjie@qq.com' for key 'email'
+		注意：unique约束的字段不能重复，但是可以为空，因为null不是数据
+		
+	唯一性约束（unique）表级约束：
+		表级约束可以给多个字段联合约束（也就是多个字段不能同时相等）
+		语法：
+			CREATE TABLE t_student(
+					no INT(3),
+					name VARCHAR(12),
+					email VARCHAR(32),
+					unique(name,email)
+			);
+			mysql> select * from t_student;
+			+------+------+------------+
+			| no   | name | email      |
+			+------+------+------------+
+			|    1 | wwj  | wwj@qq.com |
+			|    2 | yhh  | wwj@qq.com |
+			+------+------+------------+
+		另外，还可以给约束起名字
+			例如：
+				CREATE TABLE t_student(
+					no INT(3),
+					name VARCHAR(12),
+					email VARCHAR(32),
+					constraint t_student_email_unique unique(name,email)
+				);
+				
+			给约束起名字的意义在于可以随时删除约束。
+			如何查询约束：
+				mysql> show databases;
+				+--------------------+
+				| Database           |
+				+--------------------+
+				| information_schema |
+				| mysql              |
+				| performance_schema |
+				| sakila             |
+				| sys                |
+				| test               |
+				| world              |
+				+--------------------+
+				information_schema数据库中有一张表TABLE_CONSTRAINTS存储了约束名信息。
+				mysql> desc TABLE_CONSTRAINTS;
+				+--------------------+-------------+------+-----+---------+-------+
+				| Field              | Type        | Null | Key | Default | Extra |
+				+--------------------+-------------+------+-----+---------+-------+
+				| CONSTRAINT_CATALOG | varchar(64) | YES  |     | NULL    |       |
+				| CONSTRAINT_SCHEMA  | varchar(64) | YES  |     | NULL    |       |
+				| CONSTRAINT_NAME    | varchar(64) | NO   |     | NULL    |       |
+				| TABLE_SCHEMA       | varchar(64) | YES  |     | NULL    |       |
+				| TABLE_NAME         | varchar(64) | YES  |     | NULL    |       |
+				| CONSTRAINT_TYPE    | varchar(11) | NO   |     |         |       |
+				| ENFORCED           | varchar(3)  | NO   |     |         |       |
+				+--------------------+-------------+------+-----+---------+-------+
+				mysql> select constraint_name from table_constraints where table_name='t_student';
+				+------------------------+
+				| constraint_name        |
+				+------------------------+
+				| t_student_email_unique |
+				+------------------------+		
+			约束可以联合使用：
+				CREATE TABLE t_student_1(
+					no INT(3),
+					name VARCHAR(12),
+					email VARCHAR(32) unique not null
+					
+				);
+				
+				mysql> insert into t_student_1(no,name,email) values(1,'wwj','wwj@345.com');//成功
+				
+				mysql> insert into t_student_1(no,name,email) values(2,'helo','wwj@345.com');//失败
+				ERROR 1062 (23000): Duplicate entry 'wwj@345.com' for key 'email'
+				
+				mysql> insert into t_student_1(no,name) values(2,'helo');//失败
+				ERROR 1364 (HY000): Field 'email' doesn't have a default value
+				
+				
+				
+	主键约束：
+		当一个字段添加主键约束后，这个字段就称为主键字段，这个字段的每一个值就叫主键值。
+			主键约束的作用：
+				给某个字段添加主键约束primary key后，该字段既不能为空，也不能重复，效果如同not null unique，
+				但是，主键字段会默认添加‘索引-index’。
+			主键值的意义：
+				主键值是当前行的身份证号，唯一标识；
+			主键根据字段数量分类：
+				-给一个字段添加主键称为单一主键；
+				-给多个字段联合添加主键称为复合主键；
+				*一张表的主键只能有一个
+			主键根据性值分类：
+				-自然主键
+					*主键值若是一个自然数，这个自然数和当前表的业务没有任何关系，这种主键叫自然主键。
+				-业务主键
+					*主键值和当前表中的业务紧密相关的主键叫做业务主键，比如银行卡号。业务主键使用较少。
+			*数据库管理系统提供了一个自增的值，不需要维护，默认从1开始，且每个数字只能使用一次，即使删除了也不会再出现
+				列如：
+					drop table if exists t_student;
+					CREATE TABLE t_student(
+							no INT(10) primary key auto_increment,
+							name VARCHAR(28)
+					);
+					insert into t_student(name) values('wwj');
+					insert into t_student(name) values('wwj');
+					insert into t_student(name) values('wwj');
+					insert into t_student(name) values('wwj');
+					delete from t_student where no=4;
+					insert into t_student(name) values('wwj');
+					select * from t_student;
+					+----+------+
+					| no | name |
+					+----+------+
+					|  1 | wwj  |
+					|  2 | wwj  |
+					|  3 | wwj  |
+					|  5 | wwj  |
+					+----+------+
+	
+	
+	
+	外键约束（foreign key）：
+		*外键也分为单一外键和复合外键。
+		*一个表中可以又多个外键字段
+		*外键字段可以为null
+		*外键字段去引用另一张表的字段时，被引用字段必须具有unique约束，也就是必须具有唯一性。
+		*被引用的表称为父表，引用表称为子表，删除的时候先删子表，创建的时候先创建父表。
+		*插入的时候先插入父表中的数据再插入子表中的数据。
+		注意：外键约束只有表级定义方式。
+		
+		drop table if exists t_student,t_class;
+		CREATE TABLE t_class(
+				cno INT(3) primary key,
+				cname VARCHAR(128) not null unique
+		);
+		CREATE TABLE t_student(
+				sno INT(3) primary key auto_increment,
+				sname VARCHAR(128) not null,
+				classno INT(3),
+				constraint t_student_classno_fk foreign key(classno) references t_class(cno)
+		);
+		insert into t_class(cno,cname) values(100,'高三1班');
+		insert into t_class(cno,cname) values(200,'高三2班');
+		insert into t_class(cno,cname) values(300,'高三3班');
+		insert into t_student(sname,classno) values('a',100);
+		insert into t_student(sname,classno) values('b',100);
+		insert into t_student(sname,classno) values('c',200);
+		insert into t_student(sname,classno) values('c',200);
+		insert into t_student(sname,classno) values('d',300);
+		insert into t_student(sname,classno) values('e',300);
+		
+		
+	外键的级联更新和级联删除：（添加级联更新和级联删除的时候需要在外键约束后面添加。
+		-删除外键约束
+			alter table t_student drop foreign key t_student_classno_fk;
+		-添加级联更新
+			alter table t_student add constraint t_student_classno_fk foreign key(classno)references t_class(cno) on delete cascade;
+		*在使用级联删除后，删除父表字段，子表相关联的外键字段也会自动删除。同理级联更新也是如此。
+			mysql> delete from t_class where cno=100;
+			mysql> select * from t_student;
+			+-----+-------+---------+
+			| sno | sname | classno |
+			+-----+-------+---------+
+			|   3 | c     |     200 |
+			|   4 | c     |     200 |
+			|   5 | d     |     300 |
+			|   6 | e     |     300 |
+			+-----+-------+---------+
+			
+			
+			
+			
+存储引擎：（MySQL特有的，简单的来说，存储引擎不同，底层数据寻存储的格式就不同）
+	存储引擎的种类：
+		+--------------------+---------+----------------------------------------------------------------+--------------+------+------------+
+		| Engine             | Support | Comment                                                        | Transactions | XA   | Savepoints |
+		+--------------------+---------+----------------------------------------------------------------+--------------+------+------------+
+		| MEMORY             | YES     | Hash based, stored in memory, useful for temporary tables      | NO           | NO   | NO         |
+		| MRG_MYISAM         | YES     | Collection of identical MyISAM tables                          | NO           | NO   | NO         |
+		| CSV                | YES     | CSV storage engine                                             | NO           | NO   | NO         |
+		| FEDERATED          | NO      | Federated MySQL storage engine                                 | NULL         | NULL | NULL       |
+		| PERFORMANCE_SCHEMA | YES     | Performance Schema                                             | NO           | NO   | NO         |
+		| MyISAM             | YES     | MyISAM storage engine                                          | NO           | NO   | NO         |
+		| InnoDB             | DEFAULT | Supports transactions, row-level locking, and foreign keys     | YES          | YES  | YES        |
+		| BLACKHOLE          | YES     | /dev/null storage engine (anything you write to it disappears) | NO           | NO   | NO         |
+		| ARCHIVE            | YES     | Archive storage engine                                         | NO           | NO   | NO         |
+		+--------------------+---------+----------------------------------------------------------------+--------------+------+------------+
+	注意：存储引擎是属于表的，给表指定存储引擎相当于给表指定存储方式。
+	
+	
+	
+	
+事务：
+	-事务对应的英语单词：transaction。
+	-事务的定义：事务是一个最小的不可再分的工作单元。
+	-通常一个小的事务对应了一个完整的业务
+	-一个完整的事务需要批量的DML语句共同联合完成
+	-事务只与DML语句有关系，或者说只有DML语句才有业务，业务逻辑不同，DML语句数量不同
+	
+	事务的四个特性：（ACID）
+		-原子性A
+			*事务是最小的工作单元不可再分
+		-一致性C
+			*事务要求所有的DML语句操作时，必须要保证同时成功或同时失败
+		-隔离性I
+			*事务A和事务B间具有隔离
+		-持久性D
+			*是事务的保证，事务终结的标识（内存中的数据持久到硬盘中
+	关于事务的一些术语：
+		-开启事务
+			*start transaction；
+		-事务结束
+			*End transaction
+		-提交事务
+			*commit transaction
+		-回滚事务
+			*rollback transaction
+	和事务有关的两条重要语句：(TCL)
+		-commit
+		-rollback
+	重点：
+		在事务进行中，未结束之前DML语句是不会更改底层数据库文件中的数据的，只是将理时操作记录一下
+		在内存中完成记录。只有在事务结束的时候，而且只有成功结束的时候才会修改硬盘中底层数据库文件
+		中的数据。
+	事务开启和结束的标志：
+		-事务开始的标志
+			*任何一条DML语句的执行标志者事务的开始
+		-事务结束的标志
+			*提交或者回滚：
+				-提交：
+					*成功的结束，将所有的DML语句操作的历史纪录和底层硬盘文件中的数据来一次同步。
+				-回滚：
+					*失败的结束，将所有的DML语句操作历史纪录全部清空
+					
+	MySQL中事务的自动提交：
+		*在MySQL数据库中DML语句执行之后会自动提交，也就是自动在dml语句后面添加了commit。
+	关闭MySQL的事务自动提交：
+		-start transaction
+			*开启transaction后数据库管理系统不会自动提交，需要手动加上commit才可以，并且start transactions
+			只对本次登陆有效。start transaction 开启后，如果不手动提交，数据DML语句的执行结果只会缓存在内存
+			中，不会更新到底层硬盘数据库中，但是由于缓存在内存中，所以依然可以查询到DML语句的执行结果，在某个
+			时间清空了缓存之后就查询不到了。如果用rollback来结束事务，那么底层硬盘数据库中不会更新数据，内存中
+			也不会缓存DMl语句的执行结果
+		-set
+			*set autocommit=off;
+			*set autocommit=on;
+			或者
+			*set session autocommit=off;
+		查看事务开启状态：
+			show variables like ‘%commit%’
+			
+	事务的四个特性之一：（隔离性isolation）
+		隔离级别：
+			-读未提交		read uncommitted
+				*事务A和B，事务A未提交，事务B就能读取到，这里事务B读取到的是内存中缓存的数据
+				*这里读取到的数据叫做脏数据或者dirty read
+				*这种隔离级别是理论存在的，数据库的默认隔离级别一般都高于这个隔离级别
+			-读已提交		read committed
+				*事务A提交以后，事务B才能读取到
+				*事务B读取到的是底层硬盘数据库里的数据
+				*这种隔离级别可以避免脏数据
+				*这种隔离级别和上一种隔离级别都不可重复读取数据
+			-可重复读		repeatable read
+				*所谓的可重复读就是事务B在任何时候读取到的数据都是一样的不会因为数据库的更新而
+				读取到的数据有所不同
+				*简单的来说就是事务A提交后，事务B还是读取不到提交的数据。
+				*事务A提交后更新了底层硬盘数据库中的数据。而事务B能读取到的数据是在事
+				务A提交之前缓存在内存中的数据，是不会变的。
+			-串行化			serializable
+				*基本不会使用，所谓的串行化就是要排队。在事务A的所有语句执行完后，事务B的语句才能访问。
+				*吞吐量太低，用户体验不好
+		
+		设置事务的隔离级别：
+			-在my.ini文件中修改配置
+				*可选值：
+					- READ-UNCOMMITTED
+					- READ-COMMITTED
+					- REPEATABLE-READ
+					- SERIALIZABLE
+			在[mysqld]下面修改
+				transaction-isolate=可选值
+
+			-命令行：（这种方式设置隔离级别后要重启cmd才能生效）
+				set transaction isolation level <可选值>
+				set session transaction isolation level <可选值>（这两个都是当前会话作用域）
+				*set global transaction isolation level <可选值>（设置全局作用）
+		查看当前事务隔离级别：
+			第一种方式：
+				SELECT @@transaction_isolation
+				SELECT @@global.transaction_isolation
+			第二种方式：
+				show variables like '%tansaction_isolation%';
+				
+				
+				
+索引
+	*索引和表相同都是对象，存在硬盘中。可以将索引比喻成字典目录
+	*一张表可以有多个索引，每个字段都可以有索引
+	什么时候适合加索引：
+		*数据量庞大的时候
+		*该字段很少dml操作的时候，dml操作过多，该字段也经常需要维护，效率很低
+		*该字段经常出现在where后面的时候
+	创建索引的语法：
+		create index 索引名 on tablename(columnname);
+		create unique index 索引名 on tablename(columnname);（加上unique相当于给字段加上unique）
+	删除索引：
+		drop index 索引名 on 表名
+		
+		
+		
+视图：
+	语法：
+		create view v_dept_emp as select ename,dname,sal,hiredate,e.deptno from emp e,dept d where e.deptno
+		= e.deptno and e.deptno = 10;
+	视图的作用：
+		•视图是一种根据查询（也就是SELECT表达式）定义的数据库对象，用于获取想要看到和使用的局部数据。 
+		•视图有时也被成为“虚拟表”。 
+		•视图可以被用来从常规表（称为“基表”）或其他视图中查询数据。
+		•相对于从基表中直接获取数据，视图有以下好处：
+			–访问数据变得简单
+			–可被用来对不同用户显示不同的表的内容
+
+
+数据库设计三范式：
+	第一范式：
+		*必须有主键，且每个字段为原子性不可再分
+	第二范式：
+		*所有非主键字段完全依赖主键，不能产生传递依赖，简单的说就是避免使用联合主键
+	第三范式：
+		*非主键字段不能传递依赖主键，不然会内容冗余。

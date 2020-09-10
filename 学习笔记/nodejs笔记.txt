@@ -1,0 +1,647 @@
+node.js笔记
+
+	变量声明，在ES6中新增了let，const声明变量的方法。
+		*如果用var声明变量的话存在预解析，也就是系统会最优先为变量开辟内存空间。而使用let声明变量的话，就不存在预解析，
+		也就是，如果声明变量在使用变量之后，var声明的会undefined，而使用let声明的会报错。
+		*ES6标准中引入了块级作用域，，在之前的表准中，用var声明的变量，在代码块外面依然能访问到，但是在ES6标准中，用let声明的变量在块外面
+		访问块里面的变量是会报错的
+		*var可以多次声明同一个变量，而let只能声明一个变量一次。
+		*const声明一个变量的同时必须赋值，否则会报错，且const声明的变量只能赋值一次，否则也会报错，这样能防止变量值被篡改。let的规则
+		const都具备，const比let的限制更多一些。
+		*数组的结构赋值var [a,b,c]=[1,2,3],也可以使用let和const这样声明
+		*对象的结构赋值var {a,b,c}={a:3,b:4,c:5};，在对象赋值中还有属性别名的概念，如：const {a:d,b,c}={a:3,b:4,c:5}; console.log(d,b,c);
+		这时候d就是a，但是只能使用d，a就不能使用了
+		*对象的结构赋值还包括一种，const {sin,cos}=Math;console.log(sin,cos);cos和sin都是Math对象里面的函数，这样声明就不用在调回用的时候加Math.
+		来调用函数了。
+		*字符串的结构赋值
+		const [a,b,c,d,]="helo";
+		console.log(a,b,c,d,);
+		h e l o
+		
+		
+		
+		
+	字符串模板：//在${}里面，数据可以是多样的，可以在里面添加函数，也可以在里面添加计算表达式
+		let obj={
+		username:"wwj",
+		age:12,
+		gender:"male"
+		}
+		let tpl=`
+			<div>
+				<span>${obj.username}</span>
+				<span>${obj.gender}</span>
+				<span>${obj.gender}</span>
+			</div>
+		`;
+		console.log(tpl);
+		
+		<div>
+			<span>wwj</span>
+			<span>male</span>
+			<span>male</span>
+		</div>
+
+
+
+	在node中模块是很重要的，每个js文件就可以是一个模块。在项目比较大的时候分模块方便复用。
+	在使用requir（）引入外部模块时，使用的就是模块标识，我们可以通过模块标识找到指定的模块（模块标识就是模块的路径）
+	模块分为两大类
+		*核心模块
+			——核心模块就是node官方提供的模块，require（）引入模块时不用填写模块标识，直接填写模块名称。
+		*文件模块
+			——文件模块就是用户自己定义的模块，文件模块需要填写相对路径或者绝对路径
+			
+		*在node中有一个全局对象global，他和网页中的window作用时相同的
+			——在全局中创建的变量和函数都会作为global的属性和方法保存
+			——当如果直接定义a=10的话，默认a为全局变量
+		
+		*引入外部模块的时候用require（）函数来引用，参数需要填绝对路径或者相对路径。在调用完require函数之后会返回一个空的对象
+		
+		*通常情况下在引用其他模块中的变量或者函数时都是不可行的，那是因为在node中，书写的代码都是封装在一个看不见的自调用函数中的。
+		这个函数就是
+		function (exports, require, module, __filename, __dirname) {
+			// var hello = require("./helo.js");
+			// console.log(hello.age);
+			// console.log(hello.name);
+			// console.log(hello.sayName());
+			console.log(arguments.callee+"")
+		}
+		使用console.log(arguments.callee+"")就能打印出这个隐藏的自调用函数
+
+		如果想要其他模块能引用此模块中的变量的话，需要在书写代码的时候把希望被其他模块引用的内容暴露给外界。
+		
+		
+		定义变量或者函数的时候需要用exports或者module，module.exports==exports列如：
+		exports.a=123
+		exports.sayHelo=function(){
+			console.log("helo node");
+		}
+		如果想要同时暴露多个变量或者函数时可以书写为
+		module.exports={
+			name:"孙悟空",
+			age:20,
+			sayName:function(){
+				console.log("helo");
+			}；
+		}
+		
+		
+		exports和module.exports
+			——通过exports只能通过.来暴露内部变量
+				*exports.XXX=xxx
+			——而module.exports既可以通过.也可以通过直接负值的方式暴露内部变量
+				*module.exports.xxx=xxx或者module.exports={}
+				
+				
+		包：
+			包里面包含有很多文件，列如：
+				主文件，bin，libraries，等等。但是只有两个文件是必须的，那就是主文件和package.json。package.json是
+				描述包的非代码信息，而document是描述包的代码信息。*******package.json文件中绝对不能写注释**********
+			
+			
+			项目所依赖的包都会自动下载到node_modules文件夹里面
+				
+				
+		NPM（node package manager）node包管理工具，借助npm，node已经与第三方系统形成了一个很好的生态系统。package.json文件中不能有大写字母
+		
+		npm命令
+			*查看版本信息，npm -v
+				-6.9.0
+			*查看所有模块的版本信息，npm version
+				——{ npm: '6.9.0',
+				  ares: '1.15.0',
+				  brotli: '1.0.7',
+				  cldr: '35.1',
+				  http_parser: '2.8.0',
+				  icu: '64.2',
+				  modules: '64',
+				  napi: '4',
+				  nghttp2: '1.34.0',
+				  node: '10.16.0',
+				  openssl: '1.1.1b',
+				  tz: '2019a',
+				  unicode: '12.1',
+				  uv: '1.28.0',
+				  v8: '6.8.275.32-node.52',
+				  zlib: '1.2.11' }
+				  
+			*搜索模块
+				——npm search 需要的包名
+			*安装需要的包
+				——npm install/i 包名
+				——npm install 包名 --save  不仅安装包，还能为package.jsom添加依赖（dependencies）
+					********比如，你自己写了一个包，但是这个包依赖于其他很多的包，但是上传到服务器的时候，不用把那些依赖的包
+					全部上传，只需要要上传自己写的那个包，在package.json 中的dependencies中标明依赖的其他包，别人在下载来用的时候
+					只需要npm install你写的那个包，npm会根据package.json 中你写明的dependencies依赖项，自动下载你写的包所依赖的
+					其他包*************
+			*创建package.json文件
+				——npm init
+			*删除包
+				——npm remove/r 包名
+				
+				
+				
+				
+			CNPM
+				——cnpm是中国版的npm，由于访问国外的服务器存在网速慢等问题，淘宝架设了一个npm的镜像服务器，当安装了cnpm以后，就可以用
+				cnpm访问淘宝的服务器。用法和npm一摸一样
+				
+				
+				
+				
+			node在使用包的时候，会先在当前目录寻找node_modules里面有没有需要正在使用的包名，如果没有就依次往上找，直到找到根目录为止，
+			如果依然没有就报错。
+			
+			
+			
+			
+		文件系统：
+			1、buffer（缓冲区），buffer类似于js中的数组，其使用方法同数组基本一致。
+				——网页向服务器请求数据，可能会请求时评，音乐等文件，但是数组中不能存储音乐等二进制文件，而buffer可以。
+				——使用buffer不需要引入路径，直接引用名称即可
+				——buffer中存储的都是二进制文件，但是在显示的时候都是以十六进制显示的，buffer中的每一个元素的大小都是再00-ff也就是0-255，因为一个字节有八位，按二进制来算，最大只有255
+				——在控制台中，buffer里面的数字都是以十进制显示的
+				——buffer中的数字转化成二进制如果超过了八位，只取后面八位。
+				——每个汉字占三个字节
+				——
+					var str="helo";
+					var buf=Buffer.from(str);
+					
+				——
+					创建指定大小的buffer：
+						*var buf=new Buffer(size);buffer的构造函数都是不推荐使用的，要创建指定大小的buffer可以使用以下方法：
+					
+						*var buf=Buffer.alloc(size);buffer指定大小之，空间大小是固定了的，不会像数组一样，指定大小以后可以根据实际内容大小自动怎加数组长度
+				
+						*var buf=Buffer.allocUnsafe(size);也可以创建指定大小的buffer，这种创建方式分配的内存空间有可能含有之前用过的内存空间，这样就有之前的数据
+						包含在分配的内存里面，就会有数据泄露的风险。但是这种方法对内存的利用效率更好
+				
+				——可以使用toString 方法将buffer中的二进制数据转换成字符串输出显示。
+				
+				
+			
+			
+			2、文件系统（fs/file system）
+				*文件系统就是通过node对文件进行操作
+				*要操作文件需要引入fa模块
+				
+				*同步文件写入（同步文件写入会造成阻塞）
+				var fs=require("fs");
+				var fd=fs.openSync("helo.txt","w");
+				fs.writeSync(fd,"helo 大家好~~~");
+				fs.closeSync(fd);
+				
+				*异步文件写入（异步文件写入不会造成阻塞）
+					——异步调用的方法，结果都是通过回调函数的参数返回的。
+					——
+						var fs=require("fs");
+						fs.open("helo.txt","w",function(a,b){
+							//执行这个函数成功就返回b文件句柄，如果失败就返回a，err
+							if(!a){
+								fs.write(b,"wangwenjiewoaini",function(a){
+									//执行这个函数只会返回err或者null，也就是只有一个参数
+									if(!a){
+										console.log("写入成功！");
+									}else {
+										console.log("写入失败！");
+									}
+									fs.close(b,function(b){
+										if(!b){
+											console.log("文件已关闭！");
+										}else{
+											console.log("出现异常，文件未能成功关闭！错误："+b);
+										}
+
+									});
+								});
+							}
+						});
+
+				
+				简单文件写入：
+					同步文件写入：
+					异步文件写入：（w可选值写入的内容会直接覆盖原来的内容。a追加写入）
+						fs.writeFile("helo2.txt","wwangwenjie",{flag:"w"},function(err){
+							if(!err){
+								console.log("写入成功");
+							} else{
+								console.log("写入失败！");
+							}
+
+						})
+						
+						
+						
+						
+				流式文件写入：（这是一种异步文件写入）
+					*同步、异步、简单文件写入都不适合大文件的写入，性能差，容易导致内存泄漏。
+					*——fs.createWriteStream(path[, options])用这个函数创建一个可写流
+					
+					//创建一个流
+					var ws=fs.createWriteStream("helo3.txt");
+					//为流添加一个事件
+					ws.once("close",function(){
+						console.log("流关闭了");
+					});
+					//通过流写入数据
+					ws.write("wwjwan ");
+					ws.write("你好啊 ");
+					ws.write("太阳 ")
+
+					//关闭流
+					ws.end();
+					可以分多次写入
+					
+					
+					
+					
+				文件的读取：
+					同步读取：
+						var fd=fs.readFileSync("helo3.txt");
+						console.log(fd.toString());
+					异步读取：（err错误优先的原则，只要有错误，一定返回err）
+						var fd=fs.readFile("helo3.txt",function (err, data) {
+						   if (!err){
+							   console.log(data.toString());
+						   }
+						});
+						
+						
+						
+						
+						
+						
+			由文件的读取和写入实现的图片的复制
+				var path="C:/Users/不许州官放火/Desktop/images.jpg";
+				fs.readFile(path,function (err, data) {
+				   if (!err){
+
+						fs.writeFile("helo.jpg",data,function(err){
+							//执行这个函数只会返回err或者null，也就是只有一个参数
+							if(!err){
+								console.log("写入成功！");
+							}else {
+								console.log("写入失败！");
+							}
+
+
+						});
+					}
+				});
+				
+				
+				
+			流式读取：（文件太大的话会分为多次读取）
+				var path="C:/Users/不许州官放火/Desktop/images.jpg";
+				var fd=fs.createReadStream(path);
+				fd.once("open",function(){
+					console.log("流打开了");
+				});
+				fd.once("close",function () {
+					console.log("流关闭了");
+				});
+				fd.on("data",function (args) {
+					console.log(args);
+				});
+				
+				
+				
+			利用流式读取和流式写入复制文件：
+				var path="C:\\Users\\不许州官放火\\Music\\许嵩 - 城府.mp3";
+				//创建可读流
+				var rs=fs.createReadStream(path);
+				//创建可写流
+				var ws=fs.createWriteStream("许嵩 - 城府.mp3");
+
+				ws.once("open",function () {
+				   console.log("可写流打开了");
+				});
+				ws.once("open",function () {
+					console.log("可写流关闭了");
+				});
+				rs.once("open",function(){
+					console.log("可读流打开了");
+				});
+				rs.once("close",function () {
+					console.log("可读流关闭了");
+				});
+				//写入数据
+				//监听的data事件也可以用rs.pipe(ws)代替以下代码
+				rs.on("data",function (args) {
+					ws.write(args);
+				});
+				
+				
+			检查一个文件是否存在：
+				fs.existsSync(path)//异步的已经废弃了
+			删除一个文件
+				fs.unlinkSync(path)
+			获取文件的各种状态信息
+				fs.stat(path[, options], callback)//可以通过回调函数的参数检查文件格式，创建时间，大小等。
+			读取文件目录；
+				fs.readdir(path[, options], callback)//读取目录的内容。 回调有两个参数 (err, files)，其中 files 是目录中的文件名的数组（不包括 '.' 和 '..'）。
+			修改文件到指定大小：
+				fs.truncate(path[, len], callback)
+			创建目录
+				fs.mkdirSync(path[, options])
+			删除目录：
+				fs.rmdirSync(path)
+			重命名文件名：（也可以实现剪切到指定位置的功能）
+				fs.renameSync(oldPath, newPath)
+			监视文件大小变化：（这个函数的监视机制是有个定时器，每隔一段时间就会检查文件大小，如果文件大小与上一次发生了变化，就会触发事件，
+			如果要指定监视器事件大小的话可以通过函数中的option选项中的interval来设置，但是间隔时间要适合，间隔时间太短的话会对内存占用比较大）
+				fs.watchFile("helo.txt",function (curr, prev) {
+					console.log("之前文件大小"+prev.size);//这里是记录的上一次保存时文件的大小
+					console.log("现在文件大小"+curr.size);//这里是此次保存时文件的大小
+				});
+				
+				
+				
+				
+		函数：
+			*参数默认赋值
+				function fun(param){
+					let p=param||"hjk";
+					console.log(p);
+				}
+				fun();//可传参可不传参
+				或者
+				function fun(param="abc") {
+					console.log(param);
+				}
+				fun('ef');
+				
+			*函数解构赋值
+			function fun({username="zs",age=21}={}){
+				console.log(username,age);
+			}
+			fun(username="swk",age=18)
+			
+			*剩余参数
+			function fun(a,...parame){
+				console.log(a,param);
+			}
+			fun(1,2,3);
+			
+			输出
+			1 [2,3]
+			
+			*扩展运算符
+				function fun(a,b,c,d){
+				console.log(a+b+d+c);
+				}
+				
+				let arr=[1,2,3,4];
+				fun(...arr);
+				输出结果：
+				10
+				
+				
+			*合并数组
+				let arr1=[1,2,3];
+				let arr2=[4,5,6];
+				let arr3=[...arr1,...arr2];
+				console.log(arr3);
+			
+			*箭头函数
+				var fun = () =>console.log("helo");
+				fun();
+				等价于：
+				function fun(){
+					console.log("helo");
+				}
+				fun();
+				
+				
+				
+				var fun=param=>console.log(param);
+				fun(2);
+				等价于：
+				function fun(param){
+					console.log(param);
+				}
+				fun(2);
+				
+				
+				var fun=v=>v;
+				等价于：
+				function fun(v){
+					return v;
+				}
+				
+				
+				当函数体有多行函数时需要用花括号括起来。
+				
+				
+				
+				
+		初步实现服务器功能
+			const http=require("http");
+			//创建服务器实例对象
+			let server=http.createServer();
+			//绑定请求事件
+			server.on('request',(req,res)=>{
+				res.end("helo");
+			});
+			//监听端口
+			server.listen(3000);
+			
+			等效于：
+			const http=require("http");
+			http.createServer((req,res)=>{
+				res.end("ok");
+			}).listen(3000);
+			
+			
+			//处理请求路径的分发
+			const http=require("http");
+			http.createServer((req,res)=>{
+			   // res.end("ok");
+				if(req.url.startsWith("/a")){
+					res.end('index');
+					//res.end("helo");
+				}else{
+					res.end("meiyou");
+				}
+			}).listen(3000,()=>{
+				console.log("running....");
+			});
+			相比于res.end();方法res.write();能够执行多次
+			
+			
+		静态资源服务：
+			******简单的浏览器响应请求********
+			const http=require("http");
+			const path=require("path");
+			const fs=require("fs");
+
+			http.createServer(((req, res) => {
+				fs.readFile(path.join(__dirname,req.url),(err,contentFile)=>{
+					if(err){
+						res.writeHead(404,{
+							'Content-Type': 'text/plain;charset=utf8'
+						});
+						res.end("页面不存在");
+					}else{
+						res.end(contentFile);
+					}
+				});
+			})).listen(3000,()=>{
+				console.log("running...");
+			});
+
+		
+		
+			//告诉浏览器以什么文件类型显示文件
+			const http=require("http");
+			const path=require("path");
+			const fs=require("fs");
+			const mime=require("mime");
+
+			http.createServer(((req, res) => {
+				fs.readFile(path.join(__dirname,req.url),(err,contentFile)=>{
+					if(err){
+						res.writeHead(404,{
+							'Content-Type': 'text/plain;charset=utf8'
+						});
+						res.end("页面不存在");
+					}else{
+						//默认类型
+						let dtype='text/html';
+						//获取请求文件后缀名
+						let ext=path.extname(req.url);
+						//判断映射表中是否有请求文件后缀名
+						if(mime[ext]){
+							dtype=mime[ext];
+							
+						}
+						if(dtype.startsWith('text')){
+							dtype+=';charset=utf8';
+							
+						}
+						res.writeHead(200,{
+							'Content-Type':dtype
+						});
+						res.end(contentFile);
+					}
+				});
+			})).listen(3000,()=>{
+				console.log("running...");
+			});
+			
+			
+			
+			
+		*get参数的处理
+			url.parse()//将链接解析成对象
+			url.format()//将对象转换为连接
+		*post参数的处理
+			qurystring.stringify()
+			querysring.parse()
+			
+			const http=require("http");
+			const querystring=require("querystring");
+
+			http.createServer((req, res) => {
+				if(req.url.startsWith("/login")){
+					let pdata='';
+					req.on('data',(chunk)=>{
+						pdata+=chunk;
+					});
+					req.on('end',()=>{
+						console.log(pdata);
+						let ret=querystring.parse(pdata);
+						res.end(ret.username+'========='+ret.pwd);
+					});
+				}
+			}).listen(3000,()=>{
+				console.log("running...");
+			});
+			
+
+
+
+		*登陆页面的实现
+
+
+
+		*模板引擎渲染页面art-template
+		
+		
+		
+		*托管静态文件
+			-可以指定虚拟目录
+			-可以指定多个目录作为静态资源目录
+			
+			app.use(express.static('public')).listen(3000,()=>{
+				console.log("running....");
+			});
+			
+			
+		*模板web开发express模板
+			
+			
+			
+			
+			
+		================================================================>
+		路由
+			*http的常用请求方式
+				post	//增
+				get		//查
+				put		//改
+				delete	//删 
+				
+				restful api（一种url的格式）
+				
+				
+			
+				
+				
+				
+	============================================================================
+		*中间件
+			-中间件的挂载方式主要有两种
+				*use
+				*路由
+			-请注意以上对 next() 的调用。调用此函数时，将调用应用程序中的下一个中间件函数。
+			next() 函数不是 Node.js 或 Express API 的一部分，而是传递给中间件函数的第三自变量
+			。next() 函数可以命名为任何名称，但是按约定，始终命名为“next”。为了避免混淆，请始终使用此约定。
+			
+			
+			var express = require('express');
+			var app = express();
+			var myDate = new Date();
+			var total=0;
+			var responseText = 'Hello World!';
+
+			var requestTime = function (req, res, next) {
+				req.requestTime = myDate.toLocaleString( );
+				next();
+			};
+
+			app.use(requestTime,);
+
+			app.get('/', function (req, res,next) {
+				total++;
+
+				responseText += 'Requested at: ' + req.requestTime + '  当前访问此次：'+total;
+				res.send(responseText);
+				next();
+			},(req,res)=>{
+				console.log(responseText);
+			});
+
+			app.listen(3000);
+			
+			
+			//next("route")；会跳转到下一个中间件；
+			
+			
+			
+			
+			
+			*将json格式的数组[{},{},{}]转换为对象
+				
+				

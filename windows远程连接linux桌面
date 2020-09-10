@@ -1,0 +1,11 @@
+1、需要给linux安装一个工具：xrdp工具
+
+    yum install xrdp
+    yum install tigervnc-server
+    service xrdp start
+
+    （Ubuntu 命令是：sudo apt-get install xrdp）
+
+
+2、打开windows远程窗口
+输入linux主机IP，点击确定

@@ -1,0 +1,221 @@
+﻿Linux学习笔记
+	文件命令：
+		find命令：
+			在指定目录中查找文件：find etc/ -name *init* *代表任意多个任意字符    ？代表一个任意字符
+									-iname 忽略大小写
+									
+			根据文件大小查找：
+				find / size +204800   +大于多少，-小于少，=等于多少  文件大小按照数据块来算的  1数据块=0.5k
+			根据所有者查找：
+				find / -user doctor
+			查找在规定时间内被访问和修改过的文件或目录：+表示超过多少时间 -表示多少时间之内
+				find /etc -cmin/-amin/-mmin -5			-amin访问时间access     -cmin文件属性change name   -mmin文件内容modify
+			按多个条件查找：
+				find /etc 第一个条件 -a 第二个条件
+				find /etc 第一个条件 -o 第二个条件
+				
+			根据文件类型查找：
+				find /etc -type f/(文件)/d(目录)/l(软连接)
+			对查找到的文件进行操作：
+				find /etc 条件查找 -exec ls -l {}\;
+			根据节点查找：
+			   find /etc -iname 15445 -exec rm {} \;
+			   
+			   
+		locate命令：
+			locate命令也是一个查找命令速度比find快得多，因为它有个数据库存储了文件的信息，位于/var/lib/mlocate/mlocate.db。
+			但是如果文件资料库没有收录文件的信息是查找不到的，不过可以手动更新资料库updatedb
+			updatedb
+			-i忽略大小写
+			tmp这类存放临时文件的目录不在资料库的收录范围里面，所以里面的文件是查找不到的 
+			
+		which命令：
+			搜索命令所在目录和命令的别名
+		whereis命令：
+			可以获得命令的绝对路径和帮助文档的路径
+		grep命令：
+			在文件中搜索
+			grep 查找的字符串 文件路径   可以查找到字符串所在的行，然后列出来
+			
+			
+			在Linux里面#开始的行都是脚本或者配置文件的注释行
+			去掉以#开头的行grep -v ^# /etc
+			
+			
+		man命令：（manuel）
+			man ls/mkdir  可以查看命令的帮助文档   可以进行翻页查找等操作
+			mam 配置文件名     可以查看配置文件的帮助信息，但是不能填绝对路径，否则会把配置文件的全部信息和内容显示出来
+			在帮助文档中带1的是命令文件的帮助文档，带5的通常是配置文件的帮助
+			仅查看命令帮助文档：
+				man 1 文件名
+			仅查看配置文件帮助文档：
+				man 5 文件名
+			可以查看文件格式	
+		whatis命令：
+			如果只想看命令是干什么用的，可以直接使用这个命令，
+			whatis 命令名
+			
+			
+		apropos命令：
+			可以直接查看配置文件信息，是干什么用的。
+		help命令：
+			查看Linux内置命令，如cd
+	
+	
+	
+	
+	管理命令：
+		adduser：
+			添加用户，管理员root才能使用；
+		passwd：
+			修改密码
+		who：
+			查看当前登录用户及信息
+				tty  本地登录
+				pts  远程登陆
+		w：
+			查看当前登录用户详细的登录信息
+			load average	表示系统在过去的1/5/15分钟的负载情况
+			up 			系统连续运行时间
+			IDLE		表示用户空闲时间
+			PCPU		用户执行当前命令占用的cpu时间
+			JCPU		用户累计占用的cpu时间
+			
+	压缩解压命令：
+		.gz：（只能压缩文件，不能压缩目录）
+			压缩： gzip 文件名	
+			解压缩：gunzip 文件名
+		.tar:(打包目录成文件，常见软件包格式为.tar.gz）
+			-z：打包的同时压缩
+			-f：指定文件名
+			-v：压缩时显示详细信息
+			-c：打包
+			打包并压缩文件：
+				tar -zcvf 目录   （参数一定要按照这个顺序，否则会报错）
+			解压缩：
+				tar -zxvf 压缩包名 （参数有顺序且x表示解包，z解压缩，v显示详细信息，f指定解压文件）
+		.zip:(windows和Linux都支持的格式）
+			-r 压缩目录
+			压缩：
+				zip 指定文件名.zip  要压缩的文件
+			解压缩：	
+				unzip
+		.bz2：（zip的升级版，.bz2多了-k的选项，解压缩后保留原文件，且压缩比更好）
+			压缩和解压缩语法同zip一样：bzip2 .........
+			打包并压缩目录  tar -cjf 压缩后文件名 要压缩的文件名（-j表示压缩）
+			解压缩并解包压缩包  tar -xjf  						（-j表示解压缩，-x表示解包，-f表示指定文件名）
+			
+			
+			
+	网络命令：
+		write：（给其他用户发送信息）执行权限：所有用户
+			write 用户名（CTRL+d保存内容发送）
+		wall（write all）：（广播信息，给当前在线的所有人都发送信息）	执行权限：所有用户
+			wall 要发送的消息
+		ping：
+			ping -c 3 127.0.0.1  ping三次
+		ifconfig：
+		
+		
+		mail：
+			
+			
+		last：
+			主机所有的登录记录，重启记录
+		lastlog：
+			只查看最后一次登录信息
+			lastlog -u 用户uid或者用户名  查看特定用户的最近一次登录记录
+		traceroute：（路由追踪）
+			tracerroute  域名
+		netstat：（显示网络相关信息）	执行权限：所有用户
+			-t		tcp协议
+			-u		udp协议
+			-l 		监听
+			-r 		路由
+			-n  	显示ip地址和端口号
+			示例：
+				netstat -tuln	显示本机监听端口
+				netstat -an		显示本机所有的网络连接
+				netstat -rn 	查看本地路由表
+				
+		mount:(挂载设备）
+			mount [-t 文件系统] /dev/硬件 挂载目录（挂载目录一般来说在media下面）
+		umount：（卸载设备）
+			umont 硬件或挂载目录
+		
+	关机重启命令：
+		showtdown -h now（或者指定时间）
+		showtdown -c （取消之前的操作）
+		showtdown -r now（或者指定时间）
+		其他的重启命令：
+			reboot
+			init 6
+		其他的关机命令：
+			powroff（直接断电）
+			halt
+			init 0
+	系统运行级别：
+		0	关机
+		1	单用户
+		2	不完全多用户，不含NFS（network file system）服务
+		3	完全多用户，比3多了网络服务
+		4	未分配
+		5	图形界面
+		6	重启
+		linux init启动流程：
+			现在的linux destros有两种init方式	
+				早期的system V initialation：源于unix 至今大多数linux destros 仍使用的这种init方式
+				新型的upstart ：基于事件机制，所有的系统服务，任务都是由事件驱动的，目前的Ubuntu（6.10 and later），Fedora（9.10 					and later），Debian（optional）采用这种方式
+				============详细描述https://blog.csdn.net/heqiyu34/article/details/18793857====================
+				============https://blog.csdn.net/heqiyu34/article/details/18793885============================
+
+
+
+
+	包：
+		源代码包：
+			优点：
+				可以看到源代码
+			缺点：
+				安装之前需要编译，编译很慢，源代码安装时间是二进制包安装时间的几十倍
+		二进制包（rpm）
+			优点：
+				安装快速
+			缺点：	
+				看不到源代码
+				
+				
+	rpm包安装：
+		安装：
+			rpm -ivh 包全名
+				-i（install）	安装
+				-v（verbose）	详细信息
+				-h（hash）		进度
+				
+		升级:
+			rpm -Uvh 包全名
+			
+		卸载：
+			rpm -e（erase）	包名
+		查看包是否安装：（-a 查询已安装的全部软件包				-i（informa） 查询软件信息			-p（package）查询未安装软件的信息）
+			rmp -q（query） 包名
+		查询包的安装位置：
+			rmp -ql	包名
+			rpm -qlp	包全名	（打算安装的包会安装的目录）
+		查询文件属于哪个包：
+			rpm -qf 文件名
+		查询软件包的依赖性：
+			rpm -qR（requires）	包名
+	yum安装rpm包：
+
+
+查看端口号是否开启
+	firewall-cmd --query-port=8089/tcp
+永久开启端口号
+	firewall-cmd --add-port=8089/tcp --permanent
+重启防火墙
+	firewall-cmd --reload
+
+
+			
+				
