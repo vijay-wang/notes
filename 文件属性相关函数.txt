@@ -1,0 +1,15 @@
+access()	检测文件的  当前用户  是否存在或者检测文件权限
+chmod()		修改文件权限
+chown()		修改文件所有者
+truncate()	修改文件大小
+rename()	重命名文件
+chdir()		修改当前进程的路径
+getcwd()	获取当前进程路径
+mkdir()		创建目录
+rmdir()		删除空目录
+opendir()	打开目录
+readdir()	读取目录
+closedir()	关闭目录
+dup()		复制文件描述符，返回的是最小的没有被占用的文件描述符
+dup2(old,new)	如果新的文件描述符已经指向一个文件，那么使用dup2函数，会先将new文件描述符关闭，然后指向old文件描述符
+fcntl()			

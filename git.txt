@@ -1,0 +1,61 @@
+
+	git 使用前配置
+		*配置提交人姓名git config --global user.name
+		*配置提交人邮件git config --global user.email
+		*查看配置信息  git config --list
+		*将下次弹框的用户名和密码存储起来，永久使用 git config --global credential.helper store
+		*将存储的密码和用户名清除	git config --global credential.helper reset
+		*临时存储账号密码15分钟(linux)	git config --global credential.helper cache
+		*临时存储账号密码15分钟（windows）	git config --global credential.helper wincred
+		*在https链接中加入用户名和密码	https://username:pwd@address
+
+
+	git 基本使用
+		*git init 初始化项目
+		*git status 查看目录下的文件状态
+		*git add filename/.	将文件一个或所有文件添加到暂存区
+		*git commit -m 描述	将暂存区的文件加入仓库，每次的描述是必须要写的，应写明文件做了哪些改动
+		*git checkout filename		如果文件提交到了暂存区，用暂存区中的文件覆盖工作区中的文件，
+						如果没有提交到暂存区，就恢复到最开始没有编辑的状态
+		*git rm --cached fileName	将文件从暂存区中删除
+		*git reset --hard commitID	将项目恢复到commitID，commitID之后提交的将会全部被清除
+		
+
+		[分支]
+		*git branch			查看分支
+		*git branch branchName		创建分支，当前操作处于哪一个分支，就在哪个分支上面创建分支
+		*git checkout branchName	切换到brahcName分支
+		*git branch -d			删除分支，分支必须在合并以后才能被删除
+		*git branch -D			强制删除分支
+
+		[暂存]
+		*git stash			如果要切换到其他分支，而本分暂时不想提交，就可以用
+						这个命令将改变的内容暂时保存起来
+		*git stash pop			用此命令可以将保存起来的内容恢复
+
+		[远程仓库]
+		*git push 远程仓库地址 远程分支		提交到远程仓库
+		*git remote add 别名 远程仓库地址	为远程仓库地址取别名
+		*git push 别名 远程分支			提交到远程仓库分支	如果远程仓库没有这个
+							分支，就会在远程仓库创建此分支
+		*git push -u 别名 远程分支		-u记住远程地址和分支 下次只需要git push即可	 
+
+		[冲突解决]
+		当一个项目需要多人协作时，需要在github的setting中为项目添加collaborators。但是在多人
+		协作开发中会遇到冲突。
+
+		比如当A从远程仓库中中拉取了最新版本，B也从远程仓库中拉取了最新版本。然后A做了修改暂时
+		未提交，B做了修改提交了。此时A再提交的话就会发生错误。此时解决冲突的方法就是A用git pull
+		 项目地址 项目分支   把项目B提交后的最新改动拉取下来，拉取下来之后，项目中会有冲突标记
+		，有开始和结束和中间分割线。只要将提示删除，然后再提交就可以了。
+		*git pull 项目地址 项目分支
+
+		[ssh免密登陆]
+		每次将本地代码推送到远程仓库都要进行身份验证就很麻烦，所以github提供了ssh验证。使用非对称加密，将公钥保存到github，将私钥保存到本地，提交时使用ssh地址就不需要再填写用户名和密码了。
+		*ssh-keygen可以生成公钥和私钥
+
+		[git忽略清单]
+		使用场景：比如在一个项目中有一些文件是不想被提交的，但是有其他很多文件是需要提交的，
+		我们就必须要用git add 加一个个的文件名。因此我们可以在项目根目录下创建.gitignore文件
+		，在里面添加不想被git管理的文件名，这样在使用git add .  的时候就不会吧忽略清单中的文
+		件添加到暂存区中。

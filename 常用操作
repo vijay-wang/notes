@@ -1,0 +1,2 @@
+安装g++ yum install gcc-c++ libstdc++-devel    或者 sudo apt-get install g++
+新建用户没有权限    到/etc/sudoers 里面添加

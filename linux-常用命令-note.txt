@@ -1,0 +1,166 @@
+文档或目录颜色：
+	白色：普通文件
+	绿色：可执行文件
+	红色：压缩文件
+	蓝色：目录（块，字符，管道）
+	青色：链接文件
+	黄色：设备文件
+	灰色：其他文件
+命令参数风格：
+	带-		system V风格
+	不带-		BSD风格（伯克利大学风格）
+	一个字母的参数	-
+	单词参数	--
+shell命令解析流程：
+	1、在终端输入命令
+	2、shell解析输入的命令
+	3、搜索环境变量
+	4、找到相应的命令，执行程序（命令本质上就是程序）
+shell的历史：
+	shell	unix	bourne shell （bourne-人名）
+	bash	linux	bourne agin shell（缩写为bash，linux上的shell通常就是指bash）
+terminal快捷键：
+	ctrl+d	删除光标后一个字符
+	ctrl+u	删除光标前的字符串
+	ctrl+k	删除光标后的字符床
+linux文件目录介绍：
+	/usr	unix system resource
+		*头文件
+		*用户安装应用（usr/local/）
+	/lib	系统运行时加载的一些动态链接库
+	/media	系统自动挂载目录
+	/mnt	手动挂载目录
+	/etc	配置文件
+	/opt	安装第三方应用程序（还有usr/local）
+	/home	用户家目录（宿主目录）
+	/tmp	临时目录，存放临时文件，重启后丢失
+linux下的文件类型共七种：
+	-	普通文件
+	d	目录
+	l	软链接
+	p	管道
+	s	套接字
+	c	字符设备
+		*鼠标、键盘
+	b 	块设备
+		*u盘、硬盘
+mkdir：
+	递归创建目录	-p	
+touch:
+	文件存在：	更新文件创建时间，但不会覆盖内容
+	文件不存在：	创建文件
+rm:
+	-i	删除时提示
+mv:
+	可以使用这个移动文件或者重命名
+	mv file(文件）file1（文件）会将file的内容移动到file1里面，并将file1里面的内容覆盖掉，然后file也会被删掉
+cp:
+	cp dir dir1（不存在）	会将先创建dir1目录，并将dir里面的内容拷贝到dir1
+查看文件内容：
+	*cat：适合查看小文件
+		-n	加行号
+		-b	空行不加行号
+	*more:可以查看更大的文件
+		回车	一行行浏览
+		空格	往下翻页
+		ctrl+b	往回翻页
+		
+	*less:
+	*head:
+		-num	显示num行
+	*tail:
+ln创建软链接：
+	ln -s 文件绝对路径 快捷方式名
+ln创建硬链接：
+	ln 文件路径（可以不是绝对路径） 硬链接名
+	注：一个文件可以有多个硬链接，指向同一个inode，这个inode指向数据块，一个文件的硬链接个数等与该文件的硬链接计数。当一个文件的全部硬链接被删除，操作系统不会在对该文件所在的存储空间做保护。也就是你手动删除一个文件之后，只是硬链接被全部删除了，就算被格式化，该文件仍然存在于磁盘中，只是相当该文件的硬链接数为零，硬链接数为零时操作系统不会对该文件所在的数据块做保护，当写入新的文件内容，该数据块将会被覆盖。这就是格式化后，数据仍然可以被恢复的原因。要想彻底删除隐秘数据，要么摧毁磁盘，要么用其他数据覆盖掉原有的内容。
+chmode修改权限：
+	r:4
+	w:2
+	x:1
+	-:0
+	
+	chmod +222 filename
+	chmod -444 filename
+	chmod 777  filename
+chown修改所有者和所属组：
+	chmown 新的所有者 filename
+	chown  所有者：所属组 filename
+chgrp 修改所属组：
+	chgrp	新的所属组 filename
+apt:
+	软件的安装 apt install packagename （apt-get 在ubuntu16.04以下必须用这个，以上可以用apt）
+	软件的写在 apt uninstall softwareName 
+	清空安装软件时的缓存 apt clean（清空的是/var/cache/apt/archeves里面的.deb格式的软件包）
+	更新包列表 apt update
+.deb格式软件安装：
+	dpkg -i 软件包	安装软件
+	dpkg -r 软件名 	卸载软件
+find搜索：
+	文件名
+		*find path -name fileName
+	文件大小
+		*find path -seze +10M
+		*find path +5k -size -10k
+		greater than 10M:+
+		less than 10M:-
+		equal to 10M:
+		单位：
+			k（lower）
+			M（upper）
+	文件日期
+		create time:-ctime
+		modify time:-mtime
+		access time:-atime
+		
+		
+		one day later:+1
+		within one day:-1
+	文件类型
+		*find path -type fileType
+		fileType:
+			regular file:f
+			directory file:d
+			block file:b
+			character device file:c
+			pipe file:p
+			symbolic link file:l
+			socket file:s
+	深度
+		*find . -maxdepth n -type fileName (最深搜索到目录第n层）
+		*find . -mindepth n -type fileName (最少搜索到目录第n曾）
+	高级查找
+		*find . -type fileType -exec ls -lh {} \;
+		*find . -type fileType -ok ls -lh {} \; (-ok参数更安全，在执行后面的操作之前会询问）
+		*find . -type fileType|ls -l(管道操作，效果同上面一样） 
+grep搜索文件内容：
+	grep -r(要进入子目录需要加这个参数) searchString path
+		-n(这个参数可以显示查到的结果在第几行）
+压缩包的管理：
+	linux下最常见的两种压缩包格式：
+		.gz	gzip
+		.bz2	bzip2
+		住：想要保留源文件可以加参数-k，而且这两个命令在压缩多个文件时不会将多个文件打包在一起，所以压缩文件时一般不用这两个命令,只能压缩文件，不能压缩目录
+	linux下常用的压缩命令：
+		*tar:
+			参数：
+				-c	create		创建压缩文件
+				-x			释放压缩文件
+				-v	version		打印提示信息
+				-z			使用gz格式压缩文件
+				-j			使用bz2格式压缩文件
+				-f			指定压缩包的名字
+		tar压缩文件命令格式：
+			tar 参数 压缩文件的名字  压缩原材料
+		tar解压缩文件命令格式：
+			tar 参数 解压缩文件的名字 -C 解压缩目录		（要指定解压缩目录就加-C，不指定解压缩目录默认解压到当前目录
+
+
+
+rar:
+	rar压缩文件：
+		rar a 压缩包名 压缩源文件	
+		rar x 压缩包名(不用指定后缀名） 解压目录
+zip/unzip
+	zip 参数 压缩包名 原材料	（如果压缩的文件有目录，参数就为-r)
+	unzip 压缩包名 -d 解压目录

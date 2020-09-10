@@ -1,0 +1,26 @@
+yum install convmv -y
+convmv 的使用方法：
+convmv -f 源编码 -t 新编码 [选项] 文件名
+
+1、-f ENCODING
+指定目前文件名的编码，如-f gbk
+2、-t ENCODING
+指定将要转换成的编码，如-f utf-8
+2、-r
+递归处理子文件夹 递归转换目录下所有文件名
+3、–notest
+真正进行操作，默认情况下是不对文件进行真实操作
+4、–list
+显示列出所有支持的编码
+5、–unescap
+可以做一下转义，比如把%20变成空格
+6、-i
+交互模式（询问每一个转换，防止误操作）
+
+
+
+
+示例：
+
+GBK 转码 UTF-8
+convmv -f GBK -t UTF-8 --notest -r /home/
