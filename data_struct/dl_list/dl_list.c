@@ -1,4 +1,3 @@
-
 #include<stdio.h>
 #include<stdlib.h>
 #include<assert.h>
@@ -81,6 +80,7 @@ int main(void)
 {
 	DbList P = InitDbList();
 	int i=100;
+	srand((unsigned int)time(NULL));
 	while(i--)
 		Add(rand()%100+1,P);
 	PrintList(P);
