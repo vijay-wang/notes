@@ -1,6 +1,15 @@
 #include "link_stack.h"
 
 
+void PrintStack(Stack s)
+{
+	int i = 0;
+	while(s -> next) 
+	{
+		printf("第%d个元素：%d\n",i++ ,s -> next -> data);
+		s = s -> next;
+	}
+}
 
 void ErrProc(char str[])
 {
@@ -19,10 +28,11 @@ Stack CreateStack(void)
 	return my_stack;
 }
 
-void InitStack(Stack s)
-{
-	s -> next = (void*)0;
-}
+
+//void InitStack(Stack s)
+//{
+//	s -> next = (void*)0;
+//}
 
 //返回真表示栈为空，返回假表示栈不为空
 int IsEmpty(Stack s)
@@ -30,38 +40,51 @@ int IsEmpty(Stack s)
 	return s -> next == (void*)0;
 }
 
-//s为栈顶结点，只能传入栈顶结点，大量push能提高效率
-Position push(Stack s,DataType data)
+//s为栈顶结点
+void push(Stack s,DataType data)
 {
 	Stack new_stack = malloc(sizeof(struct Node));	
 	if(!new_stack) 
 	{
 		ErrProc("out of space!\n");
-		return new_stack;
+		exit(EXIT_FAILURE);
 	}
-	new_stack -> next = (void*)0;
+	new_stack -> next = s -> next;
 	new_stack -> data = data;
 	s -> next = new_stack;
-	return new_stack;
 }
 
 //删除栈顶元素，返回栈顶结点
-Position pop(Stack s)
+void pop(Stack s)
 {
 	if(IsEmpty(s))	
 	{
 		ErrProc("stack is empty!\n");
+		exit(EXIT_FAILURE);
 	}	
-	while(s -> next -> next) s = s -> next;
-	free(s -> next);
-	s -> next = (void*)0;
-	return s;
+	Stack tmp = s -> next;
+	s -> next = s -> next -> next;
+	free(tmp);
 }
 
+//返回栈顶结点的指针
 Position top(Stack s)
 {
-	while(s -> next != (void*)0)	s = s -> next;
-	return s;
+	if(s -> next) return s -> next;
+	return (void*)0;
 }
 
+void FreeStack(Stack s)
+{
+	int i = 0;
+	Stack tmp = s;
+	while(s -> next)
+	{
+		tmp = s -> next;
+		free(s);
+		s = tmp;	
+//		printf("free%d\n",++i);
+	}
+	free(s);
+}
 
