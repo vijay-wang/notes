@@ -2,7 +2,7 @@
 #include<time.h>
 int main(void){
 	int a;
-	Tree my_tree = insert(10,(void*)0);
+	Tree my_tree = insert(10,NULL);
 	srand((unsigned int)time(NULL));
 	for(int i = 0;i < 20;i++){
 		a = rand()% 21 + 0;
