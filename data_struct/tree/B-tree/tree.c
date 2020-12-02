@@ -44,16 +44,11 @@ find(const ElementType X,const BNode node){
 	int mid = (low + high) / 2;
 	
 	while(1){
+		mid = (low + high) / 2;
 		if(X == node -> data[mid]) return mid;
 		if(low == high)	return -1;
-		if(X < node -> data[mid]){
-			high = mid - 1;
-			mid = (low + high) / 2;
-		}	
-		else{
-			low = mid + 1;
-			mid = (low + high) / 2;
-		}		
+		if(X < node -> data[mid]) high = mid - 1;
+		else low = mid + 1;
 	}
 	return -1;	
 }
@@ -149,7 +144,11 @@ Insert(const ElementType X,BTree T){
 		}
 		//如果结点的第一个孩子结点不为null，则结点为非叶结点
 		else{
-			//查找元素插入位置
+			//如果结点元素已满，先分裂，再插入
+			if(T -> amount == MAX_ELEMENT){
+				split_b_tree(X,T);
+			}
+			//进行二分查找查找元素插入位置
 			int insert_pos = find_insert_pos(X,T);
 			//分两种情况，因为要考虑边界问题
 			if(X < T -> data[insert_pos]) Insert(X,T -> children[insert_pos]);
